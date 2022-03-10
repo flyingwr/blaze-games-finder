@@ -34,12 +34,12 @@ async def parse_payload(payload):
 		if seed:
 			with open("./last_games.json", "w+") as f:
 				ujson.dump(list(
-					map(calc_seed,
-						get_previous_seeds(seed, seeds_amount)
-					)
+					map(calc_seed, get_previous_seeds(seed, seeds_amount))
 				), f)
 		else:
 			print(f"Seed of roll with id `{_id}` was not found.")
+	else:
+		print(f"Data of roll with if `{_id}` was not found.")
 
 
 async def receive_message(ws):
