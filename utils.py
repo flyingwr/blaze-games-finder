@@ -46,7 +46,7 @@ def get_previous_seeds(server_seed, amount):
 	return chain
 
 
-def get_hashes(seed):
+def calc_seed(seed):
 	_hash = hmac.new(seed, salt, hashlib.sha256).hexdigest()
 	n = int(float.fromhex(_hash) % 15)
-	return { "color": tiles[n], "roll": n, "server_seed": seed.decode(), "hash": _hash}
+	return { "color": tiles[n], "roll": n, "server_seed": seed.decode(), "hash": _hash }
