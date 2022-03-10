@@ -39,7 +39,7 @@ async def parse_payload(payload):
 		else:
 			print(f"Seed of roll with id `{_id}` was not found.")
 	else:
-		print(f"Data of roll with if `{_id}` was not found.")
+		print(f"Data of roll with id `{_id}` was not found.")
 
 
 async def receive_message(ws):
