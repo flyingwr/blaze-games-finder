@@ -1,4 +1,3 @@
 aiohttp
 asyncio
 ujson
-websockets
