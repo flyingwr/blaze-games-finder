@@ -48,8 +48,7 @@ def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 
 def calc_seed(seed: AnyStr):
 	"""Calculate the hash of `seed` in order to parse the obtained hash,
-		resulting in the stats (color, roll number, and server_seed) of it
-	"""
+		resulting in the stats (color, roll number and server_seed) of it"""
 	if isinstance(seed, str):
 		seed = seed.encode()
 
