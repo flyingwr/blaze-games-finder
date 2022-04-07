@@ -5,8 +5,8 @@ For some odd reason <font size=1>(they might be trying to hide something? 🤔)<
 
 Despite of that, it's still possible to get the last games seeds by fetching them through the [API](https://blaze.com/api/roulette_games/recent).
 
-### **Usage example (Double)**
-In order to make it work, there must be a seed grabbed of a game.
+### **Usage of utils.py**
+In order to make it work, there must be a seed grabbed of a game of Double.
 * Calculate a single seed
     ```python
     from utils import calc_seed
