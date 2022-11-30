@@ -2,12 +2,15 @@
 """
 	Everything on this script is based
 	on Blaze formulas that can be found in
-	this official code snippet of the company:
+	these official code snippets of the company:
+	https://codesandbox.io/s/o5orm2mmrq
 	https://codesandbox.io/s/lpjx3ko13z
 
-	Official information can be found in
+	Official information can be found in:
+	https://blaze.com/pt/provably-fair/crash
 	https://blaze.com/pt/provably-fair/double
 """
+from math import floor
 from typing import AnyStr, ByteString, List
 
 import hashlib
@@ -31,8 +34,11 @@ tiles = {
 	4: "red"
 }
 
+"""the hash of bitcoin block 570128 (https://medium.com/@blazedev/blaze-com-crash-seeding-event-v2-d774d7aeeaad)"""
+crash_salt = b"0000000000000000000415ebb64b0d51ccee0bb55826e43846e5bea777d91966"
+
 """hash of bitcoin block 570120 (https://medium.com/@blazedev/blaze-com-double-seeding-event-d3290ef13454)"""
-salt = b"0000000000000000002aeb06364afc13b3c4d52767e8c91db8cdb39d8f71e8dd"
+double_salt = b"0000000000000000002aeb06364afc13b3c4d52767e8c91db8cdb39d8f71e8dd"
 
 def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 	"""Get the seeds prior to `server_seed`"""
@@ -46,11 +52,47 @@ def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 		chain.append(_hash.hexdigest().encode())
 	return chain
 
-def calc_seed(seed: AnyStr):
+def divisible(_hash, mod):
+	"""Check if a crash hash is divisible by `mod`"""
+	hash_len = len(_hash)
+
+	result = 0
+
+	o = hash_len % 4
+	i = o - 4 if o > 0 else 0
+	while i < hash_len:
+		result <<= 16
+		result += int(_hash[i:i + 4], 16)
+		result %= mod
+
+		i += 4
+
+	return result == 0
+
+def get_point(_hash):
+	"""Calculate a crash point with its hash"""
+	if divisible(_hash, 15):
+		return 0
+
+	h = int(_hash[0:int(52 / 4)], 16)
+	e = 2 ** 52
+
+	return float(f"{(floor((100 * e - h) / (e - h)) / 100):.02f}")
+
+def calc_crash_seed(seed: AnyStr):
+	"""Calculate the hash of `seed` in order to parse the obtained hash,
+		resulting in the stats (crash_point and server_seed) of it"""
+	if isinstance(seed, str):
+		seed = seed.encode()
+
+	_hash = hmac.new(seed, crash_salt, hashlib.sha256).hexdigest().encode()
+	return { "crash_point": get_point(_hash), "server_seed": seed.decode() }
+
+def calc_double_seed(seed: AnyStr):
 	"""Calculate the hash of `seed` in order to parse the obtained hash,
 		resulting in the stats (color, roll number and server_seed) of it"""
 	if isinstance(seed, str):
 		seed = seed.encode()
 
-	n = int(float.fromhex(hmac.new(seed, salt, hashlib.sha256).hexdigest()) % 15)
+	n = int(float.fromhex(hmac.new(seed, double_salt, hashlib.sha256).hexdigest()) % 15)
 	return { "color": tiles[n], "roll": n, "server_seed": seed.decode() }

@@ -6,15 +6,30 @@ For some odd reason <font size=1>(they might be trying to hide something? 🤔)<
 Despite of that, it's still possible to get the last games seeds by fetching them through the [API](https://blaze.com/api/roulette_games/recent).
 
 ### **Usage of utils.py**
-In order to make it work, there must be a seed grabbed of a game of Double.
-* Calculate a single seed
+In order to make it work, there must be a seed grabbed of a game of Double or Crash.
+* Calculate a single seed (Crash)
     ```python
-    from utils import calc_seed
+    from utils import calc_crash_seed
+
+    seed = "042c168b8b65f5fe4cf0f3c830afedaaa7c2075bd944ac14435afbc1ceca7678"
+
+    if __name__ == "__main__":
+        print(calc_crash_seed(seed))
+    ```
+
+    Output:
+    ```JS
+    {'crash_point': 18.79, 'server_seed': '042c168b8b65f5fe4cf0f3c830afedaaa7c2075bd944ac14435afbc1ceca7678'}
+    ```
+
+* Calculate a single seed (Double)
+    ```python
+    from utils import calc_double_seed
 
     seed = "d28341d85a7c182a6a58dfd1d4a21a1fe4fa06f3ba18ae0fe9575ac2fff0d153"
 
     if __name__ == "__main__":
-        print(calc_seed(seed))
+        print(calc_double_seed(seed))
     ```
 
     Output:
@@ -24,12 +39,12 @@ In order to make it work, there must be a seed grabbed of a game of Double.
 
 * Calculate a prior amount of seeds
     ```python
-    from utils import calc_seed, get_previous_seeds
+    from utils import calc_double_seed, get_previous_seeds
 
     seed = "d28341d85a7c182a6a58dfd1d4a21a1fe4fa06f3ba18ae0fe9575ac2fff0d153"
 
     if __name__ == "__main__":
-        print(list(map(calc_seed, get_previous_seeds(seed, 10))))
+        print(list(map(calc_double_seed, get_previous_seeds(seed, 10))))
     ```
 
     Output:
