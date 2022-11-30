@@ -1,9 +1,13 @@
 """Fetch the last games of Double (blaze.com) by calculating their seeds"""
-from utils import calc_seed, get_previous_seeds
+from utils import calc_double_seed, get_previous_seeds
 
 import aiohttp
 import asyncio
-import ujson
+
+try:
+	import ujson as json
+except ImportError:
+	import json
 
 blaze_api_games_url = "https://blaze.com/api/roulette_games/recent"
 
@@ -18,8 +22,8 @@ async def main():
 					seed = data[0].get("server_seed") # Last game of Double is first in list
 					if seed:
 						with open("./last_games.json", "w+") as f:
-							result = list(map(calc_seed, get_previous_seeds(seed, seeds_amount)))
-							ujson.dump(result, f)
+							result = list(map(calc_double_seed, get_previous_seeds(seed, seeds_amount)))
+							json.dump(result, f)
 
 						print(f"Successfully calculated a total of {len(result)} seeds")
 					else:
