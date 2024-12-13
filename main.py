@@ -9,7 +9,7 @@ try:
 except ImportError:
 	import json
 
-blaze_api_games_url = "https://blaze.com/api/roulette_games/recent"
+blaze_api_games_url = "https://blaze.com/api/singleplayer-originals/originals/roulette_games/recent/1"
 
 seeds_amount = 1000 # Amount of seeds to calculate
 
