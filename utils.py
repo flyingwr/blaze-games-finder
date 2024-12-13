@@ -37,8 +37,8 @@ tiles = {
 """the hash of bitcoin block 570128 (https://medium.com/@blazedev/blaze-com-crash-seeding-event-v2-d774d7aeeaad)"""
 crash_salt = b"0000000000000000000415ebb64b0d51ccee0bb55826e43846e5bea777d91966"
 
-"""hash of bitcoin block 570120 (https://medium.com/@blazedev/blaze-com-double-seeding-event-d3290ef13454)"""
-double_salt = b"0000000000000000002aeb06364afc13b3c4d52767e8c91db8cdb39d8f71e8dd"
+"""hash of bitcoin block 823307 (https://bitcointalk.org/index.php?topic=5479580.msg63404290#msg63404290)"""
+double_salt = b"0000000000000000000292453e3be843129d4a0fb13f6249935524225b545c7b"
 
 def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 	"""Get the seeds prior to `server_seed`"""
