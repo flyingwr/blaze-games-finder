@@ -4,7 +4,7 @@
 	on Blaze formulas that can be found in
 	these official code snippets of the company:
 	https://codesandbox.io/s/o5orm2mmrq
-	https://codesandbox.io/s/lpjx3ko13z
+	https://codesandbox.io/p/sandbox/kymc9p
 
 	Official information can be found in:
 	https://blaze.com/pt/provably-fair/crash
@@ -47,9 +47,8 @@ def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 
 	chain = [server_seed]
 	for _ in range(amount):
-		_hash = hashlib.sha256()
-		_hash.update(chain[-1])
-		chain.append(_hash.hexdigest().encode())
+		_hash = hashlib.sha256(chain[-1]).hexdigest().encode()
+		chain.append(_hash)
 	return chain
 
 def divisible(_hash, mod):
@@ -94,5 +93,7 @@ def calc_double_seed(seed: AnyStr):
 	if isinstance(seed, str):
 		seed = seed.encode()
 
-	n = int(float.fromhex(hmac.new(seed, double_salt, hashlib.sha256).hexdigest()) % 15)
+	integ = int(hmac.new(seed, double_salt, hashlib.sha256).hexdigest(), 16)
+	randval = integ / 2 ** 256
+	n = int(randval * 15)
 	return { "color": tiles[n], "roll": n, "server_seed": seed.decode() }
