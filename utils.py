@@ -11,7 +11,7 @@
 	https://blaze.com/pt/provably-fair/double
 """
 from math import floor
-from typing import AnyStr, ByteString, Dict, List, Literal, Optional, Union
+from typing import AnyStr, Dict, List, Literal, Optional, Union
 
 import hashlib
 import hmac
@@ -40,7 +40,7 @@ crash_salt = b"0000000000000000000415ebb64b0d51ccee0bb55826e43846e5bea777d91966"
 """hash of bitcoin block 823307 (https://bitcointalk.org/index.php?topic=5479580.msg63404290#msg63404290)"""
 double_salt = b"0000000000000000000292453e3be843129d4a0fb13f6249935524225b545c7b"
 
-def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
+def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[bytes]:
 	"""Get the seeds prior to `server_seed`"""
 	if isinstance(server_seed, str):
 		server_seed = server_seed.encode()
@@ -51,7 +51,7 @@ def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 		chain.append(_hash)
 	return chain
 
-def divisible(_hash: ByteString, mod: int) -> bool:
+def divisible(_hash: bytes, mod: int) -> bool:
 	"""Check if a crash hash is divisible by `mod`"""
 	hash_len = len(_hash)
 
@@ -68,7 +68,7 @@ def divisible(_hash: ByteString, mod: int) -> bool:
 
 	return result == 0
 
-def get_point(_hash: BytesWarning) -> float:
+def get_point(_hash: bytes) -> float:
 	"""Calculate a crash point with its hash"""
 	if divisible(_hash, 15):
 		return 0
