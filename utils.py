@@ -11,7 +11,7 @@
 	https://blaze.com/pt/provably-fair/double
 """
 from math import floor
-from typing import AnyStr, ByteString, List
+from typing import AnyStr, ByteString, Dict, List, Literal, Optional, Union
 
 import hashlib
 import hmac
@@ -51,7 +51,7 @@ def get_previous_seeds(server_seed: AnyStr, amount: int) -> List[ByteString]:
 		chain.append(_hash)
 	return chain
 
-def divisible(_hash, mod):
+def divisible(_hash: ByteString, mod: int) -> bool:
 	"""Check if a crash hash is divisible by `mod`"""
 	hash_len = len(_hash)
 
@@ -68,7 +68,7 @@ def divisible(_hash, mod):
 
 	return result == 0
 
-def get_point(_hash):
+def get_point(_hash: BytesWarning) -> float:
 	"""Calculate a crash point with its hash"""
 	if divisible(_hash, 15):
 		return 0
@@ -78,7 +78,7 @@ def get_point(_hash):
 
 	return float(f"{(floor((100 * e - h) / (e - h)) / 100):.02f}")
 
-def calc_crash_seed(seed: AnyStr):
+def calc_crash_seed(seed: AnyStr) -> Dict[str, Union[float, str]]:
 	"""Calculate the hash of `seed` in order to parse the obtained hash,
 		resulting in the stats (crash_point and server_seed) of it"""
 	if isinstance(seed, str):
@@ -87,7 +87,7 @@ def calc_crash_seed(seed: AnyStr):
 	_hash = hmac.new(seed, crash_salt, hashlib.sha256).hexdigest().encode()
 	return { "crash_point": get_point(_hash), "server_seed": seed.decode() }
 
-def calc_double_seed(seed: AnyStr):
+def calc_double_seed(seed: AnyStr) -> Dict[str, Union[int, str]]:
 	"""Calculate the hash of `seed` in order to parse the obtained hash,
 		resulting in the stats (color, roll number and server_seed) of it"""
 	if isinstance(seed, str):
@@ -97,3 +97,19 @@ def calc_double_seed(seed: AnyStr):
 	randval = integ / 2 ** 256
 	n = int(randval * 15)
 	return { "color": tiles[n], "roll": n, "server_seed": seed.decode() }
+
+def count_roll_occurrences(
+	seed: AnyStr,
+	rounds: int,
+	color: Optional[Literal["black", "red", "white"]] = None,
+	roll: Optional[int] = None
+) -> int:
+	"""Count the occurrences of a specific roll or color in the results of previous rounds of Double game"""
+	if color is None and roll is None:
+		raise ValueError("Please specify either 'color' or 'roll' parameter")
+
+	key = "color" if color is not None else "roll"
+	target = color if color is not None else roll
+
+	rolls = [_round[key] for _round in map(calc_double_seed, get_previous_seeds(seed, rounds))]
+	return rolls.count(target)
