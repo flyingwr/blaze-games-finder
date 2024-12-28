@@ -102,9 +102,11 @@ def count_roll_occurrences(
 	seed: AnyStr,
 	rounds: int,
 	color: Optional[Literal["black", "red", "white"]] = None,
-	roll: Optional[int] = None
+	roll: Optional[int] = None,
+	sequence: Optional[int] = None
 ) -> int:
-	"""Count the occurrences of a specific roll or color in the results of previous rounds of Double game"""
+	"""Count the occurrences of a specific roll or color in the results of previous rounds of Double game,
+	optionally checking for consecutive occurrences"""
 	if color is None and roll is None:
 		raise ValueError("Please specify either 'color' or 'roll' parameter")
 
@@ -112,4 +114,13 @@ def count_roll_occurrences(
 	target = color if color is not None else roll
 
 	rolls = [_round[key] for _round in map(calc_double_seed, get_previous_seeds(seed, rounds))]
-	return rolls.count(target)
+
+	if sequence is None:
+		return rolls.count(target)
+
+	count = 0
+	for i in range(len(rolls) - sequence + 1):
+		if rolls[i:i + sequence] == [target] * sequence:
+			count += 1
+
+	return count
