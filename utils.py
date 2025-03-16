@@ -11,10 +11,12 @@
 	https://blaze.com/pt/provably-fair/double
 """
 from math import floor
-from typing import AnyStr, Dict, List, Literal, Optional, Union
+from typing import AnyStr, Dict, List, Literal, Union
 
 import hashlib
 import hmac
+
+type RollColor = Literal["black", "red", "white"]
 
 tiles = {
 	0: "white",
@@ -99,28 +101,39 @@ def calc_double_seed(seed: AnyStr) -> Dict[str, Union[int, str]]:
 	return { "color": tiles[n], "roll": n, "server_seed": seed.decode() }
 
 def count_roll_occurrences(
-	seed: AnyStr,
-	rounds: int,
-	color: Optional[Literal["black", "red", "white"]] = None,
-	roll: Optional[int] = None,
-	sequence: Optional[int] = None
+    seed: str,
+    rounds: int,
+    color: RollColor | None = None,
+    roll: int | None = None,
+    sequence: int | None = None,
+    pattern: list[RollColor] | None = None
 ) -> int:
-	"""Count the occurrences of a specific roll or color in the results of previous rounds of Double game,
-	optionally checking for consecutive occurrences"""
-	if color is None and roll is None:
-		raise ValueError("Please specify either 'color' or 'roll' parameter")
+    """Counts occurrences of a specific roll or color in past Double rounds,
+    optionally checking for consecutive occurrences or a specific color pattern."""
 
-	key = "color" if color is not None else "roll"
-	target = color if color is not None else roll
+    if pattern is not None:
+        rolls = [
+            roll["color"]
+			for roll in map(calc_double_seed, get_previous_seeds(seed, rounds))
+        ]
+        plen = len(pattern)
+        return sum(rolls[i : i + plen] == pattern for i in range(len(rolls) - plen + 1))
 
-	rolls = [_round[key] for _round in map(calc_double_seed, get_previous_seeds(seed, rounds))]
+    if color is None and roll is None:
+        raise ValueError("Please specify either 'color' or 'roll' parameter")
 
-	if sequence is None:
-		return rolls.count(target)
+    key = "color" if color is not None else "roll"
+    target = color if color is not None else roll
 
-	count = 0
-	for i in range(len(rolls) - sequence + 1):
-		if rolls[i:i + sequence] == [target] * sequence:
-			count += 1
+    rolls = [
+        roll[key]
+        for roll in map(calc_double_seed, get_previous_seeds(seed, rounds))
+    ]
 
-	return count
+    if sequence is None:
+        return rolls.count(target)
+
+    return sum(
+        rolls[i : i + sequence] == [target] * sequence
+        for i in range(len(rolls) - sequence + 1)
+    )
