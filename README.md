@@ -1,9 +1,5 @@
 ### **Note**
-Unexpectedly, this program had to be updated: It was then managing to retrieve the data of each game running on [Double](https://blaze.com/pt/games/double) by using WebSockets, but now is just making a single HTTP request to Blaze API since some inner things changed.
-
-For some odd reason <font size=1>(they might be trying to hide something? 🤔)</font>, the seed of each game running on Double **is no longer being included on the page**.
-
-Despite of that, it's still possible to get the last games seeds by fetching them through the [API](https://blaze.com/api/roulette_games/recent).
+The calculation method for Crash seeds is no longer working due to the outdated salt provided by Blaze itself. The updated salt couldn't be found anywhere.
 
 ### **Usage of utils.py**
 In order to make it work, there must be a seed grabbed of a game of Double or Crash.
