@@ -101,39 +101,40 @@ def calc_double_seed(seed: AnyStr) -> Dict[str, Union[int, str]]:
 	return { "color": tiles[n], "roll": n, "server_seed": seed.decode() }
 
 def count_roll_occurrences(
-    seed: str,
-    rounds: int,
-    color: RollColor | None = None,
-    roll: int | None = None,
-    sequence: int | None = None,
-    pattern: list[RollColor] | None = None
+	seed: str,
+	rounds: int,
+	color: RollColor | None = None,
+	roll: int | None = None,
+	sequence: int | None = None,
+	pattern: list[RollColor] | list[int] | None = None
 ) -> int:
-    """Counts occurrences of a specific roll or color in past Double rounds,
-    optionally checking for consecutive occurrences or a specific color pattern."""
+	"""Counts occurrences of a specific roll or color in past Double rounds,
+	optionally checking for consecutive occurrences or a specific color pattern."""
 
-    if pattern is not None:
-        rolls = [
-            roll["color"]
+	if pattern is not None:
+		key = "color" if all(isinstance(item, str) for item in pattern) else "roll"
+		rolls = [
+			roll[key]
 			for roll in map(calc_double_seed, get_previous_seeds(seed, rounds))
-        ]
-        plen = len(pattern)
-        return sum(rolls[i : i + plen] == pattern for i in range(len(rolls) - plen + 1))
+		]
+		plen = len(pattern)
+		return sum(rolls[i : i + plen] == pattern for i in range(len(rolls) - plen + 1))
 
-    if color is None and roll is None:
-        raise ValueError("Please specify either 'color' or 'roll' parameter")
+	if color is None and roll is None:
+		raise ValueError("Please specify either 'color' or 'roll' parameter")
 
-    key = "color" if color is not None else "roll"
-    target = color if color is not None else roll
+	key = "color" if color is not None else "roll"
+	target = color if color is not None else roll
 
-    rolls = [
-        roll[key]
-        for roll in map(calc_double_seed, get_previous_seeds(seed, rounds))
-    ]
+	rolls = [
+		roll[key]
+		for roll in map(calc_double_seed, get_previous_seeds(seed, rounds))
+	]
 
-    if sequence is None:
-        return rolls.count(target)
+	if sequence is None:
+		return rolls.count(target)
 
-    return sum(
-        rolls[i : i + sequence] == [target] * sequence
-        for i in range(len(rolls) - sequence + 1)
-    )
+	return sum(
+		rolls[i : i + sequence] == [target] * sequence
+		for i in range(len(rolls) - sequence + 1)
+	)
